@@ -31,6 +31,11 @@ class ChristmasCard(Scene):
             bauble_pt = weights.dot(np.array(triangle.get_vertices()))
             self.play(FadeIn(Dot(point=bauble_pt, color=random_bright_color())), run_time=0.1)
 
+        star = Tex("$\star$", color=YELLOW)
+        star.scale(2)
+        star.next_to(tree, UP, buff=0)
+        self.add(star)
+
         if GREETING:
             greeting = Tex(GREETING, tex_template=edwardian_script)
             greeting.to_corner(UL)
