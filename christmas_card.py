@@ -11,6 +11,10 @@ FONT_SIZE = 1.5
 class ChristmasCard(Scene):
 
     def construct(self):
+
+        for _ in range(100):
+            self.add(Snowflake(point=np.random.uniform(-1, 1, 3) * np.array([config.frame_x_radius, config.frame_y_radius, 0])))
+
         tree = VGroup(Polygon(np.array([0, 2, 0]), np.array([-1.75, -2, 0]), np.array([1.75, -2, 0]), color=GREEN))
         trunk = VGroup(Rectangle(height=1.5, width=1, color=ORANGE))
         tree.to_edge(RIGHT, buff=1)
@@ -55,3 +59,15 @@ def divide_triangle(triangle):
 
 def next_sierpinski_iteration(triangles):
     return VGroup(*itertools.chain(*map(divide_triangle, triangles.submobjects)))
+
+def drift_down(mobj, dt):
+    mobj.shift(dt * DOWN)
+    mobj.shift(random.uniform(-0.02, 0.02) * RIGHT)
+    if mobj.get_arc_center()[1] < -config.frame_y_radius:
+        mobj.to_edge(UP)
+
+
+class Snowflake(Dot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_updater(drift_down)
