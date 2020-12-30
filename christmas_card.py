@@ -52,7 +52,6 @@ class ChristmasCard(Scene):
             self.play(Write(signoff), run_time=3)
 
 def divide_triangle(triangle):
-    assert isinstance(triangle, Polygon)
     vertices = list(triangle.get_vertices())
     midpoints = list(itertools.starmap(lambda x, y: (x + y)/2, zip(vertices, vertices[1:] + [vertices[0]])))
     return itertools.starmap(functools.partial(Polygon, color=triangle.color), zip(vertices, midpoints, [midpoints[-1]] + midpoints))
@@ -65,7 +64,6 @@ def drift_down(mobj, dt):
     mobj.shift(random.gauss(0, 0.01) * RIGHT)
     if mobj.get_arc_center()[1] < -config.frame_y_radius:
         mobj.to_edge(UP)
-
 
 class Snowflake(Dot):
     def __init__(self, *args, **kwargs):
