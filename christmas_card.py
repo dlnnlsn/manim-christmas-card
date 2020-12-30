@@ -38,15 +38,18 @@ class ChristmasCard(Scene):
 
         if GREETING:
             greeting = Tex(GREETING, tex_template=edwardian_script)
+            greeting.scale(2)
             greeting.to_corner(UL)
             self.play(Write(greeting), run_time=3)
 
         message = Tex("Merry Christmas", tex_template=edwardian_script)
+        message.scale(2)
         self.play(Write(message), run_time=3)
         self.wait()
 
         if SIGNOFF:
             signoff = Tex(SIGNOFF, tex_template=edwardian_script)
+            signoff.scale(2)
             signoff.to_corner(DR)
             self.play(Write(signoff), run_time=3)
 
