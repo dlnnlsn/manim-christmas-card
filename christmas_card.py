@@ -1,5 +1,6 @@
 from manim import *
 import itertools
+import random
 
 edwardian_script = TexTemplate(preamble=r"""
 \usepackage[no-math]{fontspec}
@@ -22,6 +23,13 @@ class ChristmasCard(Scene):
         for _ in range(5):
             next_iter = next_sierpinski_iteration(tree)
             self.play(Transform(tree, next_iter))
+
+        for _ in range(30):
+            triangle = random.choice(tree.submobjects)
+            weights = np.random.rand(len(triangle.get_vertices()))
+            weights /= sum(weights)
+            bauble_pt = weights.dot(np.array(triangle.get_vertices()))
+            self.play(FadeIn(Dot(point=bauble_pt, color=random_bright_color())), run_time=0.1)
 
         if GREETING:
             greeting = Tex(GREETING, tex_template=edwardian_script)
