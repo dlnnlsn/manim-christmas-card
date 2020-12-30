@@ -3,15 +3,10 @@ import functools
 import itertools
 import random
 
-edwardian_script = TexTemplate(preamble=r"""
-\usepackage[no-math]{fontspec}
-\setmainfont[Mapping=tex-text]{Edwardian Script ITC}
-\usepackage[defaultmathsizes]{mathastext}""",
-tex_compiler="xelatex",
-output_format=".xdv")
-
 GREETING = "To [Recipient]..."
 SIGNOFF = "From [Sender]"
+FONT = "Edwardian Script ITC"
+FONT_SIZE = 1.5
 
 class ChristmasCard(Scene):
 
@@ -38,19 +33,16 @@ class ChristmasCard(Scene):
         self.add(star)
 
         if GREETING:
-            greeting = Tex(GREETING, tex_template=edwardian_script)
-            greeting.scale(2)
+            greeting = Text(GREETING, font=FONT, size=FONT_SIZE)
             greeting.to_corner(UL)
             self.play(Write(greeting), run_time=3)
 
-        message = Tex("Merry Christmas", tex_template=edwardian_script)
-        message.scale(2)
+        message = Text("Merry Christmas", font=FONT, size=FONT_SIZE)
         self.play(Write(message), run_time=3)
         self.wait()
 
         if SIGNOFF:
-            signoff = Tex(SIGNOFF, tex_template=edwardian_script)
-            signoff.scale(2)
+            signoff = Text(SIGNOFF, font=FONT, size=FONT_SIZE)
             signoff.to_corner(DR)
             self.play(Write(signoff), run_time=3)
 
