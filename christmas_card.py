@@ -62,7 +62,7 @@ def next_sierpinski_iteration(triangles):
 
 def drift_down(mobj, dt):
     mobj.shift(dt * DOWN)
-    mobj.shift(random.uniform(-0.02, 0.02) * RIGHT)
+    mobj.shift(random.gauss(0, 0.01) * RIGHT)
     if mobj.get_arc_center()[1] < -config.frame_y_radius:
         mobj.to_edge(UP)
 
