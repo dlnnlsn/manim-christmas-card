@@ -1,4 +1,5 @@
 from manim import *
+import functools
 import itertools
 import random
 
@@ -56,8 +57,8 @@ class ChristmasCard(Scene):
 def divide_triangle(triangle):
     assert isinstance(triangle, Polygon)
     vertices = list(triangle.get_vertices())
-    midpoints = list(map(lambda pts: (pts[0] + pts[1])/2, zip(vertices, vertices[1:] + [vertices[0]])))
-    return map(lambda triple: Polygon(*triple, color=triangle.color), zip(vertices, midpoints, [midpoints[-1]] + midpoints))
+    midpoints = list(itertools.starmap(lambda x, y: (x + y)/2, zip(vertices, vertices[1:] + [vertices[0]])))
+    return itertools.starmap(functools.partial(Polygon, color=triangle.color), zip(vertices, midpoints, [midpoints[-1]] + midpoints))
 
 def next_sierpinski_iteration(triangles):
     return VGroup(*itertools.chain(*map(divide_triangle, triangles.submobjects)))
