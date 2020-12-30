@@ -11,8 +11,9 @@ FONT_SIZE = 1.5
 class ChristmasCard(Scene):
 
     def construct(self):
-        tree = VGroup(Polygon(np.array([4, 2, 0]), np.array([2.25, -2, 0]), np.array([5.75, -2, 0]), color=GREEN))
+        tree = VGroup(Polygon(np.array([0, 2, 0]), np.array([-1.75, -2, 0]), np.array([1.75, -2, 0]), color=GREEN))
         trunk = VGroup(Rectangle(height=1.5, width=1, color=ORANGE))
+        tree.to_edge(RIGHT, buff=1)
         trunk.next_to(tree, DOWN, buff=0)
         self.play(ShowCreation(trunk), ShowCreation(tree))
         
