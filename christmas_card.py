@@ -16,7 +16,7 @@ class ChristmasCard(Scene):
 
     def construct(self):
         tree = VGroup(Polygon(np.array([4, 2, 0]), np.array([2.25, -2, 0]), np.array([5.75, -2, 0]), color=GREEN))
-        trunk = VGroup(Rectangle(height=1.75, width=1, color=ORANGE))
+        trunk = VGroup(Rectangle(height=1.5, width=1, color=ORANGE))
         trunk.next_to(tree, DOWN, buff=0)
         self.play(ShowCreation(trunk), ShowCreation(tree))
         
