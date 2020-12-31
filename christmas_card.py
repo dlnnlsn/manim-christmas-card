@@ -16,7 +16,7 @@ class ChristmasCard(Scene):
             self.add(Snowflake(point=np.random.uniform(-1, 1, 3) * np.array([config.frame_x_radius, config.frame_y_radius, 0])))
 
         tree = VGroup(Polygon(np.array([0, 2, 0]), np.array([-1.75, -2, 0]), np.array([1.75, -2, 0]), color=GREEN))
-        trunk = VGroup(Rectangle(height=1.5, width=1, color=ORANGE))
+        trunk = VGroup(Rectangle(height=1.5, width=1, color=DARK_BROWN))
         tree.to_edge(RIGHT, buff=1)
         trunk.next_to(tree, DOWN, buff=0)
         self.play(ShowCreation(trunk), ShowCreation(tree))
@@ -25,12 +25,12 @@ class ChristmasCard(Scene):
             next_iter = next_sierpinski_iteration(tree)
             self.play(Transform(tree, next_iter))
 
-        for _ in range(30):
+        for _ in range(40):
             triangle = random.choice(tree.submobjects)
             weights = np.random.rand(len(triangle.get_vertices()))
             weights /= sum(weights)
             bauble_pt = weights.dot(np.array(triangle.get_vertices()))
-            self.play(FadeIn(Dot(point=bauble_pt, color=random_bright_color())), run_time=0.1)
+            self.play(FadeIn(Dot(point=bauble_pt, color=random_bright_color(), radius=0.1)), run_time=0.1)
 
         star = Tex("$\star$", color=YELLOW)
         star.scale(2)
@@ -66,6 +66,6 @@ def drift_down(mobj, dt):
         mobj.to_edge(UP)
 
 class Snowflake(Dot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, radius=0.04, **kwargs):
+        super().__init__(*args, radius=radius, **kwargs)
         self.add_updater(drift_down)
