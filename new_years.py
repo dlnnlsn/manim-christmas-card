@@ -48,6 +48,7 @@ class Firework(VGroup):
     def __init__(self, initial_position=ORIGIN, initial_velocity=UP, num_particles = 150, reference_colors = [WHITE], **kwargs):
         super().__init__(**kwargs)
         self.add(FireworkParticle(point=initial_position, initial_velocity=initial_velocity, **kwargs))
+        self.initial_velocity = initial_velocity
         self.exploded = False
         self.num_particles = num_particles
         self.color_map = color_gradient(reference_colors, self.num_particles)
@@ -72,4 +73,4 @@ class LetterWork(Firework):
         self._letter_mobject = Text(letter)[0]
 
     def get_random_velocity(self):
-        return self._letter_mobject.point_from_proportion(random.random())
+        return self._letter_mobject.point_from_proportion(random.random()) + self.initial_velocity[0] * RIGHT
