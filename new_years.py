@@ -45,7 +45,7 @@ class FireworkParticle(Dot):
 
 class Firework(VGroup):
     
-    def __init__(self, initial_position=ORIGIN, initial_velocity=UP, num_particles = 100, reference_colors = [WHITE], **kwargs):
+    def __init__(self, initial_position=ORIGIN, initial_velocity=UP, num_particles = 150, reference_colors = [WHITE], **kwargs):
         super().__init__(**kwargs)
         self.add(FireworkParticle(point=initial_position, initial_velocity=initial_velocity, **kwargs))
         self.exploded = False
