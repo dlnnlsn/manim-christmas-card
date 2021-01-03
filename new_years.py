@@ -96,6 +96,18 @@ class SinusoidalFireworkScene(FireworkScene):
 class StaggeredSinusoidalFireworkScene(SinusoidalFireworkScene, StaggeredFireworkScene):
     pass
 
+class HeartFireworkScene(FireworkScene):
+
+    def final_position(self, alpha):
+        theta = alpha * 2 * math.pi * (1 - 1/len(message))
+        scale_factor = 1/2 * config.frame_y_radius / 10
+        x = 16 * math.sin(theta)**3
+        y = 13 * math.cos(theta) - 5 * math.cos(2 * theta) - 2 * math.cos(3 * theta) - math.cos(4 * theta)
+        return np.array([x, y, 0]) * scale_factor
+
+class StaggeredHeartFireworkScene(HeartFireworkScene, StaggeredFireworkScene):
+    pass
+
 class FireworkParticle(Dot):
     
     def __init__(self, initial_velocity, radius=0.02, **kwargs):
