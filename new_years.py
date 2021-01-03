@@ -1,5 +1,8 @@
 from manim import *
 import random
+import math
+from operator import itemgetter
+from colour import Color
 
 explosion_height = 3/4 * config.frame_height
 explosion_time = 5
@@ -10,6 +13,88 @@ initial_velocity_y = -gravity_y * explosion_time
 gravity = gravity_y * UP
 
 message = "Happy New Year!"
+
+class FireworkScene(Scene):
+
+    def reference_colors(self, alpha):
+        interval_width = 1/(2 * len(message))
+        hue = alpha * (1 - 2* interval_width)
+        return (Color(hsl=((hue - interval_width) % 1, 1, 0.5)), Color(hsl=((hue + interval_width) % 1, 1, 0.5)))
+
+    def final_position(self, alpha):
+        left_edge = -config.frame_x_radius + 1.5 * config.frame_width / (len(message) + 1)
+        right_edge = -left_edge
+        return np.array([interpolate(left_edge, right_edge, alpha), 1/2 * config.frame_y_radius, 0])
+
+    def initial_position(self, alpha):
+        return np.array([interpolate(-config.frame_x_radius/2, config.frame_x_radius/2, alpha), -config.frame_y_radius, 0])
+
+    def arrival_time(self, alpha):
+        return 5
+
+    def flight_time(self, alpha):
+        deltaH = (self.final_position(alpha) - self.initial_position(alpha))[1]
+        return math.sqrt(-2 * deltaH / gravity_y)
+
+    def start_time(self, alpha):
+        return self.arrival_time(alpha) - self.flight_time(alpha)
+
+    def initial_velocity(self, alpha):
+        deltaX = (self.final_position(alpha) - self.initial_position(alpha))[0]
+        time = self.flight_time(alpha)
+        return np.array([deltaX / time, -gravity_y * time, 0])
+
+    def screen_exit_time(self, alpha):
+        final_height = self.final_position(alpha)[1] + config.frame_y_radius
+        return math.sqrt(-2 * final_height / gravity_y) + self.arrival_time(alpha)
+
+    def construct(self):
+        alphas = np.linspace(0, 1, len(message))
+        launch_sequence = sorted(enumerate(zip(map(self.start_time, alphas), alphas)), key=itemgetter(1))
+        earliest_start = launch_sequence[0][1][0]
+        launch_sequence = [(index, time - earliest_start, alpha) for (index, (time, alpha)) in launch_sequence]
+
+        previous_time = 0
+        for (index, time, alpha) in launch_sequence:
+            dt = time - previous_time
+            if dt > 0:
+                self.wait(dt)
+            previous_time = time
+            if message[index].isspace():
+                continue
+            self.add(LetterWork(letter=message[index], initial_position=self.initial_position(alpha),\
+                initial_velocity=self.initial_velocity(alpha),\
+                reference_colors=self.reference_colors(alpha)))
+
+        last_exit_time = max(map(self.screen_exit_time, alphas)) - earliest_start
+        self.wait(1 + last_exit_time - previous_time)
+
+class StaggeredFireworkScene(FireworkScene):
+
+    def arrival_time(self, alpha):
+        return 5 + (len(message) - 1) * alpha
+
+class CircularFireworkScene(FireworkScene):
+
+    def final_position(self, alpha):
+        alpha *= (1 - 1/len(message))
+        return 1/2 * config.frame_y_radius * np.array([math.sin(alpha * 2 * math.pi), math.cos(alpha * 2 * math.pi), 0])
+
+    def initial_position(self, alpha):
+        return np.array([0, -config.frame_y_radius, 0])
+
+class StaggeredCircularFireworkScene(CircularFireworkScene, StaggeredFireworkScene):
+    pass
+
+class SinusoidalFireworkScene(FireworkScene):
+
+    def final_position(self, alpha):
+        left_edge = -config.frame_x_radius + 1.5 * config.frame_width / (len(message) + 1)
+        right_edge = -left_edge
+        return np.array([interpolate(left_edge, right_edge, alpha), 1/2 * config.frame_y_radius * math.sin(alpha * 2 * math.pi), 0])
+
+class StaggeredSinusoidalFireworkScene(SinusoidalFireworkScene, StaggeredFireworkScene):
+    pass
 
 class OddEvenNewYearScene(Scene):
 
@@ -100,4 +185,4 @@ class LetterWork(Firework):
         self._letter_mobject = Text(letter)[0]
 
     def get_random_velocity(self):
-        return self._letter_mobject.point_from_proportion(random.random()) #+ self.initial_velocity[0] * RIGHT
+        return self._letter_mobject.point_from_proportion(random.random())  + self.initial_velocity[0] * RIGHT
