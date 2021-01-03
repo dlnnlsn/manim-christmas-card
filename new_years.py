@@ -96,54 +96,6 @@ class SinusoidalFireworkScene(FireworkScene):
 class StaggeredSinusoidalFireworkScene(SinusoidalFireworkScene, StaggeredFireworkScene):
     pass
 
-class OddEvenNewYearScene(Scene):
-
-    def construct(self):
-        initial_spacing = np.linspace(-1/2 * config.frame_x_radius, 1/2 * config.frame_x_radius, len(message) + 2)
-        final_spacing = np.linspace(-config.frame_x_radius, config.frame_x_radius, len(message) + 2)
-        initial_velocity_x = (final_spacing - initial_spacing) / explosion_time
-
-        rainbow = color_gradient([RED, ORANGE, YELLOW, GREEN, BLUE, "#4B0082", "#EE82EE"], len(message) + 1)
-        firework_colors = zip(rainbow, rainbow[1:])
-
-        data = list(zip(message, initial_spacing[1:], initial_velocity_x[1:], firework_colors))
-
-        for letter, start_x, v_x, reference_colors in data[1::2]:
-            if letter.isspace():
-                continue
-            self.add(LetterWork(letter=letter, initial_position = start_x * RIGHT + config.frame_y_radius * DOWN,\
-                 initial_velocity = v_x * RIGHT + initial_velocity_y * UP,\
-                 reference_colors = reference_colors))
-        self.wait(1)
-        for letter, start_x, v_x, reference_colors in data[::2]:
-            if letter.isspace():
-                continue
-            self.add(LetterWork(letter=letter, initial_position = start_x * RIGHT + config.frame_y_radius * DOWN,\
-                 initial_velocity = v_x * RIGHT + initial_velocity_y * UP,\
-                 reference_colors = reference_colors))
-        self.wait(11)
-
-class NewYearScene(Scene):
-    
-    def construct(self):
-
-        initial_spacing = np.linspace(-1/2 * config.frame_x_radius, 1/2 * config.frame_x_radius, len(message) + 2)
-        final_spacing = np.linspace(-config.frame_x_radius, config.frame_x_radius, len(message) + 2)
-        initial_velocity_x = (final_spacing - initial_spacing) / explosion_time
-
-        rainbow = color_gradient([RED, ORANGE, YELLOW, GREEN, BLUE, "#4B0082", "#EE82EE"], len(message) + 1)
-        firework_colors = zip(rainbow, rainbow[1:])
-
-        for letter, start_x, v_x, reference_colors in zip(message, initial_spacing[1:], initial_velocity_x[1:], firework_colors):
-            if letter.isspace():
-                self.wait(1)
-                continue
-            self.add(LetterWork(letter=letter, initial_position = start_x * RIGHT + config.frame_y_radius * DOWN,\
-                 initial_velocity = v_x * RIGHT + initial_velocity_y * UP,\
-                 reference_colors = reference_colors))
-            self.wait(1)
-        self.wait(10)
-
 class FireworkParticle(Dot):
     
     def __init__(self, initial_velocity, radius=0.02, **kwargs):
