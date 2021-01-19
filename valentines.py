@@ -14,21 +14,22 @@ class SpokedMobject(VMobject):
 
 
 def BasicHeart(**kwargs):
-    def heart_function(t):
         start_angle = np.arctan(-4/3)
+    arc_length = 0.5 * (np.pi - start_angle)
+    def heart_function(t):
         if t <= 1:
             return interpolate(DOWN, np.array([4/5, -2/5, 0]), t)
-        elif t <= 2:
-            theta = interpolate(start_angle, np.pi, t - 1)
+        elif t <= 1 + arc_length:
+            theta = interpolate(start_angle, np.pi, (t - 1)/arc_length)
             return 1/2 * (1 + np.cos(theta)) * RIGHT + 1/2 * np.sin(theta) * UP
-        elif t <= 3:
-            theta = interpolate(0, np.pi - start_angle, t - 2)
+        elif t <= 1 + 2 * arc_length:
+            theta = interpolate(0, np.pi - start_angle, (t - 1 - arc_length)/arc_length)
             return 1/2 * (-1 + np.cos(theta)) * RIGHT + 1/2 * np.sin(theta) * UP
-        return interpolate(np.array([-4/5, -2/5, 0]), DOWN, t - 3)
+        return interpolate(np.array([-4/5, -2/5, 0]), DOWN, t - 1 - 2 * arc_length)
 
     return ParametricFunction(
         heart_function,
-        t_max = 4,
+        t_max = 2 + 2 * arc_length,
         **kwargs
     )
 
