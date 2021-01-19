@@ -1,5 +1,7 @@
 from manim import *
 
+import itertools
+
 FONT = "Edwardian Script ITC"
 FONT_SIZE = 1.5
 
@@ -14,7 +16,7 @@ class SpokedMobject(VMobject):
 
 
 def BasicHeart(**kwargs):
-        start_angle = np.arctan(-4/3)
+    start_angle = np.arctan(-4/3)
     arc_length = 0.5 * (np.pi - start_angle)
     def heart_function(t):
         if t <= 1:
@@ -47,8 +49,8 @@ def FancyHeart(**kwargs):
 
 class ValentinesScene(Scene):
     def construct(self):
-        scale_factor = 3/4
-        xbuf = config.frame_width / 40
+        scale_factor = 1
+        xbuf = scale_factor / 5
         ybuf = xbuf * 3/4
         complete_pairs = int((config.frame_width - xbuf) / ((2 + 8/5) * scale_factor + 2 * xbuf))
         extra = (config.frame_width - complete_pairs * (2 + 8/5) * scale_factor - 2 * complete_pairs * xbuf) > (2 * scale_factor)
@@ -75,14 +77,12 @@ class ValentinesScene(Scene):
                     (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + scale_factor - config.frame_x_radius) * RIGHT +
                     (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
                 )
-                self.play(Write(hearts[y][x]))
             for x in range(1, hearts_per_row, 2):
                 hearts[y][x] = SpokedMobject(Fancy, color=PINK)
                 hearts[y][x].scale(scale_factor).move_to(
                     (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + 2 * scale_factor + xbuf + 4/5 * scale_factor - config.frame_x_radius) * RIGHT +
                     (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
                 )
-                self.play(Write(hearts[y][x]))
         for y in range(1, rows, 2):
             for x in range(0, hearts_per_row, 2):
                 hearts[y][x] = SpokedMobject(Fancy, color=PINK)
@@ -90,19 +90,18 @@ class ValentinesScene(Scene):
                     (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + scale_factor - config.frame_x_radius) * RIGHT +
                     (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
                 )
-                self.play(Write(hearts[y][x]))
             for x in range(1, hearts_per_row, 2):
                 hearts[y][x] = SpokedMobject(Basic, color=RED)
                 hearts[y][x].scale(scale_factor).move_to(
                     (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + 2 * scale_factor + xbuf + 4/5 * scale_factor - config.frame_x_radius) * RIGHT +
                     (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
                 )
-                self.play(Write(hearts[y][x]))
 
+        self.play(*map(Write, itertools.chain(*hearts)))
         message = Text("Happy Valentine's Day!", font=FONT, size=FONT_SIZE)
         bounding_rectangle = Rectangle(width=message.get_width() * 1.2, height=message.get_height() * 1.6, fill_color=BLACK, fill_opacity=1)
         self.play(FadeIn(bounding_rectangle))
         self.play(Write(message))
-        self.wait(5)
+        self.wait()
 
 
