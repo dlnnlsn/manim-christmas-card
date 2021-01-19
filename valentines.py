@@ -1,5 +1,8 @@
 from manim import *
 
+FONT = "Edwardian Script ITC"
+FONT_SIZE = 1.5
+
 class SpokedMobject(VMobject):
     def __init__(self, base_mobject, num_spokes = 72, **kwargs):
         super().__init__(**kwargs)
@@ -95,7 +98,9 @@ class ValentinesScene(Scene):
                 )
                 self.play(Write(hearts[y][x]))
 
-        message = Text("Happy Valentine's Day")
+        message = Text("Happy Valentine's Day!", font=FONT, size=FONT_SIZE)
+        bounding_rectangle = Rectangle(width=message.get_width() * 1.2, height=message.get_height() * 1.6, fill_color=BLACK, fill_opacity=1)
+        self.play(FadeIn(bounding_rectangle))
         self.play(Write(message))
         self.wait(5)
 
