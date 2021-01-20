@@ -5,6 +5,31 @@ import itertools
 FONT = "Edwardian Script ITC"
 FONT_SIZE = 1.5
 
+HEARTS_PER_ROW = 10
+BASIC_HEART_WIDTH = 2
+FANCY_HEART_WIDTH = 8/5
+INTER_HEART_SPACING = BASIC_HEART_WIDTH / 10
+
+HEART_HEIGHT = 3/2
+HEART_TOP_HEIGHT = 1/2
+VERTICAL_INTER_HEART_SPACING = HEART_HEIGHT / 10
+
+total_space_taken_by_hearts = HEARTS_PER_ROW // 2 * (BASIC_HEART_WIDTH + FANCY_HEART_WIDTH + 2 * INTER_HEART_SPACING) + INTER_HEART_SPACING
+if HEARTS_PER_ROW % 2 == 1:
+    total_space_taken_by_hearts += INTER_HEART_SPACING + BASIC_HEART_WIDTH
+
+SCALE_FACTOR = config.frame_width / total_space_taken_by_hearts
+
+BASIC_HEART_WIDTH *= SCALE_FACTOR
+FANCY_HEART_WIDTH *= SCALE_FACTOR
+HEART_HEIGHT *= SCALE_FACTOR
+HEART_TOP_HEIGHT *= SCALE_FACTOR
+INTER_HEART_SPACING *= SCALE_FACTOR
+VERTICAL_INTER_HEART_SPACING *= SCALE_FACTOR
+
+NUMBER_OF_ROWS = int((config.frame_height - VERTICAL_INTER_HEART_SPACING) / (HEART_HEIGHT + VERTICAL_INTER_HEART_SPACING))
+VERTICAL_PADDING = (config.frame_height - VERTICAL_INTER_HEART_SPACING - NUMBER_OF_ROWS * (HEART_HEIGHT + VERTICAL_INTER_HEART_SPACING)) / 2
+
 class SpokedMobject(VMobject):
     def __init__(self, base_mobject, num_spokes = 72, **kwargs):
         super().__init__(**kwargs)
@@ -49,53 +74,20 @@ def FancyHeart(**kwargs):
 
 class ValentinesScene(Scene):
     def construct(self):
-        scale_factor = 1
-        xbuf = scale_factor / 5
-        ybuf = xbuf * 3/4
-        complete_pairs = int((config.frame_width - xbuf) / ((2 + 8/5) * scale_factor + 2 * xbuf))
-        extra = (config.frame_width - complete_pairs * (2 + 8/5) * scale_factor - 2 * complete_pairs * xbuf) > (2 * scale_factor)
-        rows = int((config.frame_height - ybuf) / (ybuf + 3/2 * scale_factor))
-        odd_x_padding = config.frame_width - complete_pairs * (2 + 8/5) * scale_factor - 2 * complete_pairs * xbuf + xbuf
-        if extra: odd_x_padding -= (xbuf + 8/5 * scale_factor)
-        odd_x_padding /= 2
-        even_x_padding = config.frame_width - complete_pairs * (2 + 8/5) * scale_factor - 2 * complete_pairs * xbuf + xbuf
-        if extra: even_x_padding -= (xbuf + 2 * scale_factor)
-        even_x_padding /= 2
-        hearts_per_row = 2 * complete_pairs
-        if extra: hearts_per_row += 1
-        y_padding = config.frame_height - rows * (3/2 * scale_factor + ybuf) + ybuf
-        y_padding /= 2
-
-
         Basic = BasicHeart()
         Fancy = FancyHeart()
-        hearts = [[None] * hearts_per_row for _ in range(rows)]
-        for y in range(0, rows, 2):
-            for x in range(0, hearts_per_row, 2):
-                hearts[y][x] = SpokedMobject(Basic, color=RED)
-                hearts[y][x].scale(scale_factor).move_to(
-                    (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + scale_factor - config.frame_x_radius) * RIGHT +
-                    (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
-                )
-            for x in range(1, hearts_per_row, 2):
-                hearts[y][x] = SpokedMobject(Fancy, color=PINK)
-                hearts[y][x].scale(scale_factor).move_to(
-                    (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + 2 * scale_factor + xbuf + 4/5 * scale_factor - config.frame_x_radius) * RIGHT +
-                    (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
-                )
-        for y in range(1, rows, 2):
-            for x in range(0, hearts_per_row, 2):
-                hearts[y][x] = SpokedMobject(Fancy, color=PINK)
-                hearts[y][x].scale(scale_factor).move_to(
-                    (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + scale_factor - config.frame_x_radius) * RIGHT +
-                    (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
-                )
-            for x in range(1, hearts_per_row, 2):
-                hearts[y][x] = SpokedMobject(Basic, color=RED)
-                hearts[y][x].scale(scale_factor).move_to(
-                    (even_x_padding + x//2 * ((2 + 8/5) * scale_factor + 2 * xbuf) + 2 * scale_factor + xbuf + 4/5 * scale_factor - config.frame_x_radius) * RIGHT +
-                    (y_padding + y * (3/2 * scale_factor + ybuf) + 1/2 * scale_factor - config.frame_y_radius) * DOWN
-                )
+        hearts = [[None] * HEARTS_PER_ROW for _ in range(NUMBER_OF_ROWS)]
+
+        ycoord = VERTICAL_PADDING + VERTICAL_INTER_HEART_SPACING + HEART_TOP_HEIGHT - config.frame_y_radius
+        for y in range(NUMBER_OF_ROWS):
+            xcoord = INTER_HEART_SPACING + BASIC_HEART_WIDTH / 2 - config.frame_x_radius
+            for x in range(HEARTS_PER_ROW):
+                is_basic_heart = (y + x) % 2 == 0
+                color = RED if is_basic_heart else PINK
+                shape = Basic if is_basic_heart else Fancy
+                hearts[y][x] = SpokedMobject(shape, color=color).scale(SCALE_FACTOR).move_to(xcoord * RIGHT + ycoord * DOWN)
+                xcoord += (BASIC_HEART_WIDTH + FANCY_HEART_WIDTH) / 2 + INTER_HEART_SPACING
+            ycoord += HEART_HEIGHT + VERTICAL_INTER_HEART_SPACING
 
         self.play(*map(Write, itertools.chain(*hearts)))
         message = Text("Happy Valentine's Day!", font=FONT, size=FONT_SIZE)
