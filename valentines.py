@@ -89,7 +89,7 @@ class ValentinesScene(Scene):
                 xcoord += (BASIC_HEART_WIDTH + FANCY_HEART_WIDTH) / 2 + INTER_HEART_SPACING
             ycoord += HEART_HEIGHT + VERTICAL_INTER_HEART_SPACING
 
-        self.play(*map(Write, itertools.chain(*hearts)))
+        self.play(AnimationGroup(*map(Write, itertools.chain(*hearts)), lag_ratio=0.1))
         message = Text("Happy Valentine's Day!", font=FONT, size=FONT_SIZE)
         bounding_rectangle = Rectangle(width=message.get_width() * 1.2, height=message.get_height() * 1.6, fill_color=BLACK, fill_opacity=1)
         self.play(FadeIn(bounding_rectangle))
