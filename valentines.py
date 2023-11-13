@@ -70,7 +70,7 @@ def BasicHeart(**kwargs):
             return 1 / 2 * (-1 + np.cos(theta)) * RIGHT + 1 / 2 * np.sin(theta) * UP
         return interpolate(np.array([-4 / 5, -2 / 5, 0]), DOWN, t - 1 - 2 * arc_length)
 
-    return ParametricFunction(heart_function, t_max=2 + 2 * arc_length, **kwargs)
+    return ParametricFunction(heart_function, t_range=[0, 2 + 2 * arc_length], **kwargs)
 
 
 def FancyHeart(**kwargs):
@@ -84,7 +84,7 @@ def FancyHeart(**kwargs):
         )
         return np.array([-x, y, 0]) / 20
 
-    return ParametricFunction(heart_function, t_max=2 * np.pi, **kwargs)
+    return ParametricFunction(heart_function, t_range=[0, 2 * np.pi], **kwargs)
 
 
 class ValentinesScene(Scene):
@@ -116,7 +116,7 @@ class ValentinesScene(Scene):
             ycoord += HEART_HEIGHT + VERTICAL_INTER_HEART_SPACING
 
         self.play(AnimationGroup(*map(Write, itertools.chain(*hearts)), lag_ratio=0.1))
-        message = Text("Happy Valentine's Day!", font=FONT, size=FONT_SIZE)
+        message = Text("Happy Valentine's Day!", font=FONT).scale(FONT_SIZE)
         bounding_rectangle = Rectangle(
             width=message.get_width() * 1.2,
             height=message.get_height() * 1.6,
